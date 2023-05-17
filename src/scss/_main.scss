@@ -59,7 +59,7 @@ body.dark {
 
   &__subtext {
     text-align: right;
-    color: grey;
+    color: var(--clr-text-subtext);
     font-size: 0.6rem;
     font-weight: bold;
     padding-top: 0.5rem;
