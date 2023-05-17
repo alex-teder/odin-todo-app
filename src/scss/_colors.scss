@@ -1,0 +1,25 @@
+body.light {
+  --clr-bkg: rgb(243, 243, 243);
+  --clr-bkg-nav: rgb(237, 237, 237);
+  --clr-section-borders: rgb(230, 230, 230);
+  --clr-button-borders: rgb(187, 187, 187);
+  --clr-text: rgb(40, 40, 40);
+  --clr-text-subtext: grey;
+
+  --clr-red: rgba(232, 0, 0, 0.3);
+  --clr-yellow: rgba(237, 187, 4, 0.5);
+  --clr-green: rgba(0, 233, 16, 0.3);
+}
+
+body.dark {
+  --clr-bkg: rgb(39, 39, 39);
+  --clr-bkg-nav: rgb(50, 50, 50);
+  --clr-section-borders: rgb(122, 122, 122);
+  --clr-button-borders: rgb(96, 96, 96);
+  --clr-text: white;
+  --clr-text-subtext: rgb(142, 142, 142);
+
+  --clr-red: rgba(232, 0, 0, 0.3);
+  --clr-yellow: rgba(237, 186, 4, 0.647);
+  --clr-green: rgba(0, 233, 16, 0.3);
+}

@@ -1,0 +1,151 @@
+@import "colors";
+
+body {
+  background-color: var(--clr-bkg);
+}
+
+body.dark {
+  .icon {
+    filter: invert(0.9);
+  }
+}
+
+.main {
+  padding-inline: 1rem;
+  color: var(--clr-text);
+
+  &__title {
+    padding-block: 1rem;
+  }
+}
+
+.section {
+  padding-block: 2rem;
+  border-top: 1px solid var(--clr-section-borders);
+
+  &__header {
+    margin-bottom: 1rem;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__opt {
+    padding-left: 0.75rem;
+    padding-right: 0.5rem;
+    height: 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.6rem;
+    font-weight: bold;
+    background: none;
+    border: 1px solid var(--clr-button-borders);
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.25rem;
+
+    &__icon {
+      width: 1rem;
+      height: 1rem;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  }
+
+  &__subtext {
+    text-align: right;
+    color: grey;
+    font-size: 0.6rem;
+    font-weight: bold;
+    padding-top: 0.5rem;
+  }
+}
+
+.section--add-task {
+  background-color: var(--clr-green);
+}
+
+.section--add-task .section__opt__icon {
+  background-image: url(../img/plus.svg);
+  background-size: cover;
+}
+
+.section--delete {
+  background-color: var(--clr-red);
+}
+
+.section--delete .section__opt__icon {
+  background-image: url(../img/trash.svg);
+}
+
+.section--log .section__opt__icon {
+  background-image: url(../img/clipboard-check.svg);
+}
+
+.task {
+  margin-bottom: 0.25rem;
+  padding-block: 0.25rem;
+
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  &__tick {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid var(--clr-text);
+    border-radius: 50%;
+  }
+
+  &--checked {
+    .task__text {
+      color: var(--clr-text-subtext);
+    }
+
+    .task__tick {
+      background-color: var(--clr-yellow);
+      background-image: url(../img/check.svg);
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
+}
+
+.task:hover::after {
+  content: "";
+  width: 1rem;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  background-image: url(../img/trash.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+body.dark {
+  .task:hover::after {
+    filter: invert(0.9);
+  }
+}
+
+@media (min-width: 1200px) {
+  .main {
+    padding-inline: 5rem;
+
+    &__title {
+      padding-block: 2rem;
+    }
+  }
+
+  .section {
+    &__header {
+      gap: 1rem;
+    }
+  }
+}

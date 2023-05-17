@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body class="light">
+  <aside class="aside" data-shown="false">
+    <div class="aside__namechanger">
+      <p><b>Hello, Alexander!</b></p>
+    </div>
+    <nav class="aside__list">
+      <button class="button aside__item">
+        <p>All tasks</p>
+        <div class="aside__indicator">17</div>
+      </button>
+      <div class="my-projects">
+        <h6 class="my-projects-heading">My projects</h6>
+        <button class="button aside__item">
+          <p>Project 1</p>
+          <div class="aside__indicator">5</div>
+        </button>
+        <button class="button aside__item">
+          <p>Project 2</p>
+          <div class="aside__indicator">12</div>
+        </button>
+        <button class="button aside__item" id="new-project-btn">
+          <p>New project</p>
+          <div class="aside__indicator"></div>
+        </button>
+      </div>
+      <button class="button aside__item">
+        <p>Logbook</p>
+      </button>
+    </nav>
+  </aside>
+  <main class="main">
+    <button class="button" id="menu-btn" onclick="toggleMenuOn()"></button>
+    <div id="transparent-background" onclick="toggleMenuOff()"></div>
+    <h2 class="main__title">My tasks</h2>
+    <section class="section">
+      <div class="section__header">
+        <h3 class="section__title">Project 1</h3>
+        <button class="button section__opt section--add-task">
+          <p>New task</p>
+          <div class="section__opt__icon icon"></div>
+        </button>
+        <button class="button section__opt section--delete">
+          <p>Delete project</p>
+          <div class="section__opt__icon icon"></div>
+        </button>
+      </div>
+      <div class="task">
+        <div class="button task__tick"></div>
+        <p class="task__text">Wash the dishes</p>
+      </div>
+      <div class="task task--checked">
+        <div class="button task__tick"></div>
+        <p class="task__text">Buy food</p>
+      </div>
+      <div class="task">
+        <div class="button task__tick"></div>
+        <p class="task__text">Feed the cat</p>
+      </div>
+      <div class="task">
+        <div class="button task__tick"></div>
+        <p class="task__text">Watch TV</p>
+      </div>
+      <div class="task">
+        <div class="button task__tick"></div>
+        <p class="task__text">Take a shower</p>
+      </div>
+      <div class="section__subtext">
+        <p class="section__subtext__completion">20% completed</p>
+        <p class="section__subtext__date">Created on Fri 12-05-2023 10:55</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section__header">
+        <h3 class="section__title">Project 2</h3>
+        <button class="button section__opt section--add-task">
+          <p>New task</p>
+          <div class="section__opt__icon icon"></div>
+        </button>
+        <button class="button section__opt section--delete">
+          <p>Delete project</p>
+          <div class="section__opt__icon icon"></div>
+        </button>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Study patterns</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Create design</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Set up Webpack and long ass fucking task Lorem ipsum dolor sit amet, consectetur
+          adipisicing elit. Ullam, magnam.</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Implement the logic</p>
+      </div>
+      <div class="task">
+        <div class="task__tick"></div>
+        <p class="task__text">Build the project</p>
+      </div>
+      <div class="section__subtext">
+        <p class="section__subtext__completion">20% completed</p>
+        <p class="section__subtext__date">Created on Fri 12-05-2023 12:06</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section__header">
+        <h3 class="section__title">Project long name Lorem ipsum dolor sit amet.</h3>
+        <button class="button section__opt section--add-task">
+          <p>New task</p>
+          <div class="section__opt__icon icon"></div>
+        </button>
+        <button class="button section__opt section--delete">
+          <p>Delete project</p>
+          <div class="section__opt__icon icon"></div>
+        </button>
+        <button class="button section__opt section--log">
+          <p>Add to Logbook</p>
+          <div class="section__opt__icon icon"></div>
+        </button>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Study patterns</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Create design</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Set up Webpack and long ass fucking task Lorem ipsum dolor sit amet, consectetur
+          adipisicing elit. Ullam, magnam.</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Implement the logic</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Build the project</p>
+      </div>
+      <div class="section__subtext">
+        <p class="section__subtext__completion">20% completed</p>
+        <p class="section__subtext__date">Created on Fri 12-05-2023 14:30</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section__header">
+        <h3 class="section__title">Project 2</h3>
+        <button class="button section__opt section--add-task">
+          <p>New task</p>
+          <div class="section__opt__icon"></div>
+        </button>
+        <button class="button section__opt section--delete">
+          <p>Delete project</p>
+          <div class="section__opt__icon"></div>
+        </button>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Study patterns</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Create design</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Set up Webpack and long ass fucking task Lorem ipsum dolor sit amet, consectetur
+          adipisicing elit. Ullam, magnam.</p>
+      </div>
+      <div class="task task--checked">
+        <div class="task__tick"></div>
+        <p class="task__text">Implement the logic</p>
+      </div>
+      <div class="task">
+        <div class="task__tick"></div>
+        <p class="task__text">Build the project</p>
+      </div>
+      <div class="section__subtext">
+        <p class="section__subtext__completion">20% completed</p>
+        <p class="section__subtext__date">Created on Fri 12-05-2023 16:54</p>
+      </div>
+    </section>
+  </main>
+  <script>
+    function toggleMenuOn() {
+      if (document.querySelector(".aside").dataset.shown === "false") {
+        document.querySelector(".aside").setAttribute("data-shown", "true");
+        document.querySelector("#transparent-background").style.display = "block";
+      }
+    }
+    function toggleMenuOff() {
+      if (document.querySelector(".aside").dataset.shown === "true") {
+        document.querySelector(".aside").setAttribute("data-shown", "false");
+        document.querySelector("#transparent-background").style.display = "none";
+      }
+    }
+  </script>
+</body>
+
+</html>

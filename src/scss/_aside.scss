@@ -1,0 +1,77 @@
+@import "colors";
+
+.aside {
+  background-color: var(--clr-bkg-nav);
+  color: var(--clr-text);
+
+  padding-top: 2rem;
+  padding-left: 1rem;
+  padding-right: 2rem;
+
+  &__namechanger {
+    margin-bottom: 2rem;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  &__item {
+    display: block;
+    text-align: left;
+    width: 100%;
+    min-height: 2rem;
+    padding: 0;
+    padding-block: 0.25rem;
+    padding-inline: 0.25rem;
+    border-radius: 5px;
+    border: none;
+    background: none;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:hover {
+      p {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__indicator {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 5px;
+    font-size: 0.6rem;
+    font-weight: bold;
+    color: black;
+    background-color: var(--clr-yellow);
+    border: 1px solid var(--clr-button-borders);
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .my-projects {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .my-projects-heading {
+    font-size: 0.7rem;
+    padding-left: 0.25rem;
+  }
+}
+
+#new-project-btn .aside__indicator {
+  background-image: url(../img/plus.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: var(--clr-green);
+}
