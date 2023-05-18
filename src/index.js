@@ -31,12 +31,10 @@ function toggleTheme() {
   document.body.classList.toggle("dark");
 }
 
-document.querySelector("#theme-toggle").addEventListener("click", toggleTheme);
-
 class Task {
-  constructor(text) {
+  constructor(text, isDone = false) {
     this.text = text;
-    this.isDone = false;
+    this.isDone = isDone;
   }
 
   toggle() {
@@ -45,10 +43,10 @@ class Task {
 }
 
 class Project {
-  constructor(name) {
+  constructor(name, tasks = [], datetime) {
     this.name = name;
-    this.tasks = [];
-    this.datetime = new Date();
+    this.tasks = tasks;
+    this.datetime = datetime || format(new Date(), "EEE dd-MM-yyyy HH:mm");
   }
 
   changeName(newName) {
@@ -93,8 +91,8 @@ const filesystem = {
       this.projects.splice(index, 1);
     },
   },
-  createProject: function (name) {
-    const p = new Project(name);
+  createProject: function (name, tasks, datetime) {
+    const p = new Project(name, tasks, datetime);
     this.projects.push(p);
     return p;
   },
@@ -111,30 +109,74 @@ const filesystem = {
   },
 };
 
+const storage = {
+  clear: function () {
+    localStorage.removeItem("data");
+  },
+  save: function () {
+    let acc = [];
+    for (const project of filesystem.projects) {
+      const p = {
+        name: project.name,
+        datetime: project.datetime,
+        tasks: [],
+      };
+      for (const task of project.tasks) {
+        const t = {
+          text: task.text,
+          isDone: task.isDone,
+        };
+        p.tasks.push(t);
+      }
+      acc.push(p);
+    }
+    localStorage.setItem("data", JSON.stringify(acc));
+  },
+  load: function () {
+    const arr =
+      JSON.parse(localStorage.getItem("data")) ||
+      JSON.parse(
+        `[{"name":"Chores","datetime":"Thu 18-05-2023 21:30","tasks":[{"text":"Do laundry","isDone":false},{"text":"Wash the dishes","isDone":true},{"text":"Feed the cat","isDone":false}]},{"name":"Super project!!!","datetime":"Thu 18-05-2023 21:30","tasks":[{"text":"Make tea","isDone":true},{"text":"Drink tea","isDone":false}]}]`
+      );
+    for (const p of arr) {
+      const tasks = [];
+      for (const task of p.tasks) {
+        tasks.push(new Task(task.text, task.isDone));
+      }
+      filesystem.createProject(p.name, tasks, p.datetime);
+    }
+  },
+};
+
 const user = {
   createNewProject: function (name) {
     const p = filesystem.createProject(name);
     const i = filesystem.projects.indexOf(p);
+    storage.save();
     renderSidebar();
     renderMain(i);
   },
   deleteProject: function (indexOfProject) {
     filesystem.deleteProject(indexOfProject);
+    storage.save();
     renderSidebar();
     renderMain("all");
   },
   createNewTask: function (indexOfProject, text) {
     filesystem.projects[indexOfProject].addTask(text);
+    storage.save();
     renderSidebar();
     rerenderProject(indexOfProject, renderProject(indexOfProject));
   },
   deleteTask: function (indexOfProject, indexOfTask) {
     filesystem.projects[indexOfProject].deleteTask(indexOfTask);
+    storage.save();
     renderSidebar();
     rerenderProject(indexOfProject, renderProject(indexOfProject));
   },
   toggleTask: function (indexOfProject, indexOfTask) {
     filesystem.projects[indexOfProject].tasks[indexOfTask].toggle();
+    storage.save();
     renderSidebar();
     rerenderProject(indexOfProject, renderProject(indexOfProject));
   },
@@ -222,9 +264,7 @@ function renderProject(i, flag) {
       <p class="section__subtext__completion">${
         project.percentComplete
       }% completed</p>
-      <p class="section__subtext__date">${
-        "Created on " + format(project.datetime, "EEE dd-MM-yyyy HH:mm")
-      }</p>
+      <p class="section__subtext__date">${"Created on " + project.datetime}</p>
     </div>
   `;
   return section;
@@ -287,16 +327,17 @@ function renderNewProject() {
   mainContainer.appendChild(section);
 }
 
-filesystem.createProject("Chores");
-filesystem.projects[0].addTask("Do laundry");
-filesystem.projects[0].addTask("Wash the dishes");
-filesystem.projects[0].addTask("Feed the cat");
-filesystem.projects[0].tasks[1].toggle();
-filesystem.createProject("Super project!!!");
-filesystem.projects[1].addTask("Make tea");
-filesystem.projects[1].addTask("Drink tea");
-filesystem.projects[1].tasks[0].toggle();
+// filesystem.createProject("Chores");
+// filesystem.projects[0].addTask("Do laundry");
+// filesystem.projects[0].addTask("Wash the dishes");
+// filesystem.projects[0].addTask("Feed the cat");
+// filesystem.projects[0].tasks[1].toggle();
+// filesystem.createProject("Super project!!!");
+// filesystem.projects[1].addTask("Make tea");
+// filesystem.projects[1].addTask("Drink tea");
+// filesystem.projects[1].tasks[0].toggle();
 
+storage.load();
 renderSidebar();
 renderMain("all");
 
@@ -313,6 +354,7 @@ function asideClickHandler(event) {
   }
 
   if (theButton.id === "theme-toggle") {
+    toggleTheme();
     const text = theButton.querySelector("p").innerHTML;
     if (text === "Switch to Dark theme") {
       theButton.querySelector("p").innerHTML = "Switch to Light theme";
