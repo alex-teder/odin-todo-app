@@ -81,7 +81,7 @@ class Project {
         numberOfTasksDone++;
       }
     }
-    return Math.round((numberOfTasksDone / this.tasks.length) * 100);
+    return Math.round((numberOfTasksDone / this.tasks.length) * 100) || 0;
   }
 }
 
@@ -96,6 +96,7 @@ const filesystem = {
   createProject: function (name) {
     const p = new Project(name);
     this.projects.push(p);
+    return p;
   },
   deleteProject: function (index) {
     this.projects.splice(index, 1);
@@ -106,6 +107,21 @@ const filesystem = {
   moveToLogbook: function (index) {
     const p = this.projects.splice(index, 1)[0];
     this.logbook.projects.push(p);
+    return p;
+  },
+};
+
+const user = {
+  createNewProject: function (name) {
+    const p = filesystem.createProject(name);
+    const i = filesystem.projects.indexOf(p);
+    renderSidebar();
+    renderMain(i);
+  },
+  createNewTask: function (indexOfProject, text) {
+    filesystem.projects[indexOfProject].addTask(text);
+    renderSidebar();
+    replaceProject(indexOfProject, renderProject(indexOfProject));
   },
 };
 
@@ -128,7 +144,9 @@ function renderSidebar() {
       `;
     } else {
       myProjects.innerHTML += `
-        <button class="button aside__item">
+        <button class="button aside__item" data-index="${filesystem.projects.indexOf(
+          project
+        )}">
         <p>${project.name}</p>
         </button>
       `;
@@ -145,81 +163,89 @@ function renderSidebar() {
   aside.querySelector(".aside__indicator").textContent = totalTasksUnfinished;
 }
 
+function renderProject(i, flag) {
+  let project = filesystem.projects[i];
+  if (flag === "log") {
+    project = filesystem.logbook.projects[i];
+  }
+
+  const section = document.createElement("section");
+  section.classList.add("section");
+  section.dataset.index = i;
+  section.innerHTML += `
+    <div class="section__header">
+      <h3 class="section__title">${project.name}</h3>
+      <button class="button section__opt section--add-task">
+        <p>New task</p>
+        <div class="icon section__opt__icon"></div>
+      </button>
+      <button class="button section__opt section--delete">
+        <p>Delete project</p>
+        <div class="icon section__opt__icon"></div>
+      </button>
+    </div>
+  `;
+
+  for (let task of project.tasks) {
+    const i = project.tasks.indexOf(task);
+
+    let selector = "task";
+    if (task.isDone === true) {
+      selector = "task task--checked";
+    }
+
+    section.innerHTML += `
+      <div class="${selector}" data-index="${i}">
+        <div class="button task__tick"></div>
+        <p class="button task__text">${task.text}</p>
+      </div>
+    `;
+  }
+
+  section.innerHTML += `
+    <div class="section__subtext">
+      <p class="section__subtext__completion">${
+        project.percentComplete
+      }% completed</p>
+      <p class="section__subtext__date">${
+        "Created on " + format(project.datetime, "EEE dd-MM-yyyy HH:mm")
+      }</p>
+    </div>
+  `;
+  return section;
+}
+
+function replaceProject(i, newProject) {
+  const oldProject = document.querySelector(`.section[data-index="${i}"]`);
+  oldProject.replaceWith(newProject);
+}
+
 function renderMain(flag) {
   const mainContainer = document
     .querySelector(".main")
     .querySelector(".container");
   mainContainer.innerHTML = "";
 
-  const renderProject = function (i) {
-    let project;
-    if (flag === "log") {
-      project = filesystem.logbook.projects[i];
-    } else {
-      project = filesystem.projects[i];
-    }
-
-    const section = document.createElement("section");
-    section.classList.add("section");
-    section.dataset.index = i;
-    section.innerHTML += `
-      <div class="section__header">
-        <h3 class="section__title">${project.name}</h3>
-        <button class="button section__opt section--add-task">
-          <p>New task</p>
-          <div class="icon section__opt__icon"></div>
-        </button>
-        <button class="button section__opt section--delete">
-          <p>Delete project</p>
-          <div class="icon section__opt__icon"></div>
-        </button>
-      </div>
-    `;
-
-    for (let task of project.tasks) {
-      const i = project.tasks.indexOf(task);
-
-      let selector = "task";
-      if (task.isDone === true) {
-        selector = "task task--checked";
-      }
-
-      section.innerHTML += `
-        <div class="${selector}" data-index="${i}">
-          <div class="button task__tick"></div>
-          <p class="button task__text">${task.text}</p>
-        </div>
-      `;
-    }
-
-    section.innerHTML += `
-      <div class="section__subtext">
-        <p class="section__subtext__completion">${
-          project.percentComplete
-        }% completed</p>
-        <p class="section__subtext__date">${
-          "Created on " + format(project.datetime, "EEE dd-MM-yyyy HH:mm")
-        }</p>
-      </div>
-    `;
-
+  if (typeof flag === "number") {
     document
       .querySelector(".main")
       .querySelector(".container")
-      .appendChild(section);
-  };
-
-  if (typeof flag === "number") {
-    renderProject(flag);
+      .appendChild(renderProject(flag));
   } else if (flag === "all") {
     mainContainer.innerHTML += `<h2 class="main__title">My tasks</h2>`;
     for (let i = 0; i < filesystem.projects.length; i++) {
-      renderProject(i);
+      document
+        .querySelector(".main")
+        .querySelector(".container")
+        .appendChild(renderProject(i));
     }
   } else if (flag === "log") {
     mainContainer.innerHTML += `<h2 class="main__title">Logbook</h2>`;
     for (let i = 0; i < filesystem.logbook.projects.length; i++) {
-      renderProject(i);
+      document
+        .querySelector(".main")
+        .querySelector(".container")
+        .appendChild(renderProject(i, "log"));
     }
   }
 }
@@ -300,25 +326,64 @@ function clearTrash() {
   document.querySelectorAll(".task__delete-button").forEach((btn) => {
     btn.remove();
   });
+  document.querySelectorAll("form.task").forEach((el) => {
+    el.remove();
+  });
 }
 
 function mainClickHandler(event) {
   const theButton = event.target.closest(".button");
 
   if (theButton.classList.contains("task__text")) {
-    document.querySelectorAll(".task__delete-button").forEach((btn) => {
-      btn.remove();
-    });
+    clearTrash();
     const trashIcon = document.createElement("div");
     trashIcon.classList.add("task__delete-button", "button");
     theButton.parentElement.appendChild(trashIcon);
+  } else if (
+    theButton.getAttribute("type") === "submit" ||
+    theButton.classList.contains("new-task")
+  ) {
+    // don't clear trash
   } else {
     clearTrash();
   }
 
   if (theButton.id === "project-submit-btn") {
     event.preventDefault();
-    console.log("HAHAHA");
+    const name = document.querySelector(".main").querySelector("input").value;
+    const regex = /^\S.*\S$/;
+    if (regex.test(name)) {
+      user.createNewProject(name);
+    }
+  }
+
+  if (
+    theButton.classList.contains("section--add-task") &&
+    theButton.id !== "project-submit-btn"
+  ) {
+    const newTask = document.createElement("form");
+    newTask.classList.add("task", "new-task", "button");
+    newTask.setAttribute("autocomplete", "off");
+    newTask.innerHTML = `
+      <div class="button task__tick"></div>
+      <input type="text" maxlength="99" id="new-task-text" placeholder="Enter task">
+      <button type="submit" class="button section__opt" id="task-submit-btn"></button>
+    `;
+    const theSection = theButton.closest("section");
+    theSection.insertBefore(newTask, theSection.querySelector(".task"));
+    theSection.querySelector("input").select();
+  }
+
+  if (theButton.id === "task-submit-btn") {
+    event.preventDefault();
+    const tasktext = document.querySelector("#new-task-text").value;
+    const regex = /^\S.*\S$/;
+    if (regex.test(tasktext)) {
+      const indexOfProject = parseInt(
+        theButton.closest(".section").dataset.index
+      );
+      user.createNewTask(indexOfProject, tasktext);
+    }
   }
 }
 
