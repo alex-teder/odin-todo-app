@@ -63,7 +63,8 @@ li {
 }
 
 input[type="text"] {
-  margin: 1rem;
+  display: block;
+  margin-block: 1rem;
   border: none;
   border-bottom: 1px solid var(--clr-button-borders);
   background: none;

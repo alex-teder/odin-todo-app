@@ -16,13 +16,13 @@ body.dark {
   min-height: 100dvh;
 
   &__title {
-    padding-block: 1rem;
+    padding-top: 1rem;
   }
 }
 
 .section {
   padding-block: 2rem;
-  border-top: 1px solid var(--clr-section-borders);
+  border-bottom: 1px solid var(--clr-section-borders);
 
   &__header {
     margin-bottom: 1rem;
@@ -142,10 +142,6 @@ body.dark {
 @media (min-width: 1200px) {
   .main {
     padding-inline: 5rem;
-
-    &__title {
-      padding-block: 2rem;
-    }
   }
 
   .section {

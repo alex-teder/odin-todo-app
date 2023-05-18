@@ -228,8 +228,7 @@ function renderNewProject() {
   section.innerHTML += `
     <div class="section__header">
       <form autocomplete="off">
-        <label for="project-name-field">Enter name:</label>
-        <input class="section__title" type="text" id="project-name-field" maxlength="30">
+        <input class="section__title" type="text" id="project-name-field" maxlength="30" placeholder="Enter name">
         <button type="submit" id="project-submit-btn" class="button section__opt section--add-task">
           <p>Create new project</p>
           <div class="section__opt__icon icon"></div>
@@ -237,12 +236,6 @@ function renderNewProject() {
       </form>
     </div>`;
   mainContainer.appendChild(section);
-  // mainContainer
-  //   .querySelector("#project-submit-btn")
-  //   .addEventListener("click", (event) => {
-  //     event.preventDefault();
-  //     console.log("HAHAHA");
-  //   });
 }
 
 filesystem.createProject("Chores");
@@ -285,6 +278,8 @@ document.querySelector(".aside").addEventListener("click", (event) => {
     if (theButton.id === "new-project-btn") {
       renderNewProject();
     }
+
+    toggleMenuOff();
   }
 });
 
@@ -310,6 +305,14 @@ document.querySelector(".main").addEventListener("click", (event) => {
       theButton.parentElement.appendChild(trashIcon);
     } else {
       clearTrash();
+    }
+
+    if (theButton.classList.contains("section--add-task")) {
+    }
+
+    if (theButton.id === "project-submit-btn") {
+      event.preventDefault();
+      console.log("HAHAHA");
     }
   } else {
     clearTrash();
