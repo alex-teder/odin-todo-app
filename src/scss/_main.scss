@@ -13,6 +13,7 @@ body.dark {
 .main {
   padding-inline: 1rem;
   color: var(--clr-text);
+  min-height: 100dvh;
 
   &__title {
     padding-block: 1rem;
@@ -117,19 +118,23 @@ body.dark {
   }
 }
 
-.task:hover::after {
-  content: "";
+.task {
+  p:hover {
+    text-decoration: underline;
+  }
+}
+
+.task__delete-button {
   width: 1rem;
   aspect-ratio: 1;
   flex-shrink: 0;
   background-image: url(../img/trash.svg);
   background-position: center;
   background-repeat: no-repeat;
-  cursor: pointer;
 }
 
 body.dark {
-  .task:hover::after {
+  .task__delete-button {
     filter: invert(0.9);
   }
 }

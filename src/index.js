@@ -181,7 +181,7 @@ function renderMain(flag) {
       section.innerHTML += `
         <div class="${selector}">
           <div class="button task__tick"></div>
-          <p class="task__text">${task.text}</p>
+          <p class="button task__text">${task.text}</p>
         </div>
         `;
     }
@@ -285,5 +285,33 @@ document.querySelector(".aside").addEventListener("click", (event) => {
     if (theButton.id === "new-project-btn") {
       renderNewProject();
     }
+  }
+});
+
+document.querySelector(".main").addEventListener("click", (event) => {
+  function clearTrash() {
+    document.querySelectorAll(".task__delete-button").forEach((btn) => {
+      btn.remove();
+    });
+  }
+
+  if (
+    event.target.classList.contains("button") ||
+    event.target.parentElement.classList.contains("button")
+  ) {
+    const theButton = event.target.closest(".button");
+
+    if (theButton.classList.contains("task__text")) {
+      document.querySelectorAll(".task__delete-button").forEach((btn) => {
+        btn.remove();
+      });
+      const trashIcon = document.createElement("div");
+      trashIcon.classList.add("task__delete-button", "button");
+      theButton.parentElement.appendChild(trashIcon);
+    } else {
+      clearTrash();
+    }
+  } else {
+    clearTrash();
   }
 });
