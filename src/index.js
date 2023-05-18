@@ -217,6 +217,34 @@ function renderMain(flag) {
   }
 }
 
+function renderNewProject() {
+  const mainContainer = document
+    .querySelector(".main")
+    .querySelector(".container");
+  mainContainer.innerHTML = "";
+  mainContainer.innerHTML += `<h2 class="main__title">New project</h2>`;
+  const section = document.createElement("section");
+  section.classList.add("section");
+  section.innerHTML += `
+    <div class="section__header">
+      <form autocomplete="off">
+        <label for="project-name-field">Enter name:</label>
+        <input class="section__title" type="text" id="project-name-field" maxlength="30">
+        <button type="submit" id="project-submit-btn" class="button section__opt section--add-task">
+          <p>Create new project</p>
+          <div class="section__opt__icon icon"></div>
+        </button>
+      </form>
+    </div>`;
+  mainContainer.appendChild(section);
+  // mainContainer
+  //   .querySelector("#project-submit-btn")
+  //   .addEventListener("click", (event) => {
+  //     event.preventDefault();
+  //     console.log("HAHAHA");
+  //   });
+}
+
 filesystem.createProject("Chores");
 filesystem.projects[0].addTask("Do laundry");
 filesystem.projects[0].addTask("Wash the dishes");
@@ -252,6 +280,10 @@ document.querySelector(".aside").addEventListener("click", (event) => {
       } else {
         theButton.querySelector("p").innerHTML = "Switch to Dark theme";
       }
+    }
+
+    if (theButton.id === "new-project-btn") {
+      renderNewProject();
     }
   }
 });
