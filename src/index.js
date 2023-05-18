@@ -46,6 +46,7 @@ class Project {
   constructor(name) {
     this.name = name;
     this.tasks = [];
+    this.datetime = new Date();
   }
 
   changeName(newName) {
@@ -173,7 +174,7 @@ function renderMain(flag) {
     section.innerHTML += `
       <div class="section__subtext">
         <p class="section__subtext__completion">${project.percentComplete}% completed</p>
-        <p class="section__subtext__date">Created on Fri 12-05-2023 10:55</p>
+        <p class="section__subtext__date">${project.datetime}</p>
       </div>
     `;
 
