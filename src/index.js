@@ -327,16 +327,10 @@ function renderNewProject() {
   mainContainer.appendChild(section);
 }
 
-// filesystem.createProject("Chores");
-// filesystem.projects[0].addTask("Do laundry");
-// filesystem.projects[0].addTask("Wash the dishes");
-// filesystem.projects[0].addTask("Feed the cat");
-// filesystem.projects[0].tasks[1].toggle();
-// filesystem.createProject("Super project!!!");
-// filesystem.projects[1].addTask("Make tea");
-// filesystem.projects[1].addTask("Drink tea");
-// filesystem.projects[1].tasks[0].toggle();
-
+if (localStorage.getItem("prefferedTheme") === "dark") {
+  toggleTheme();
+  document.querySelector("#theme-toggle p").innerHTML = "Switch to Light theme";
+}
 storage.load();
 renderSidebar();
 renderMain("all");
@@ -358,8 +352,10 @@ function asideClickHandler(event) {
     const text = theButton.querySelector("p").innerHTML;
     if (text === "Switch to Dark theme") {
       theButton.querySelector("p").innerHTML = "Switch to Light theme";
+      localStorage.setItem("prefferedTheme", "dark");
     } else {
       theButton.querySelector("p").innerHTML = "Switch to Dark theme";
+      localStorage.setItem("prefferedTheme", "light");
     }
   }
 
