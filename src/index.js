@@ -121,7 +121,12 @@ const user = {
   createNewTask: function (indexOfProject, text) {
     filesystem.projects[indexOfProject].addTask(text);
     renderSidebar();
-    replaceProject(indexOfProject, renderProject(indexOfProject));
+    rerenderProject(indexOfProject, renderProject(indexOfProject));
+  },
+  deleteTask: function (indexOfProject, indexOfTask) {
+    filesystem.projects[indexOfProject].deleteTask(indexOfTask);
+    renderSidebar();
+    rerenderProject(indexOfProject, renderProject(indexOfProject));
   },
 };
 
@@ -215,7 +220,7 @@ function renderProject(i, flag) {
   return section;
 }
 
-function replaceProject(i, newProject) {
+function rerenderProject(i, newProject) {
   const oldProject = document.querySelector(`.section[data-index="${i}"]`);
   oldProject.replaceWith(newProject);
 }
@@ -341,7 +346,8 @@ function mainClickHandler(event) {
     theButton.parentElement.appendChild(trashIcon);
   } else if (
     theButton.getAttribute("type") === "submit" ||
-    theButton.classList.contains("new-task")
+    theButton.classList.contains("new-task") ||
+    theButton.classList.contains("task__delete-button")
   ) {
     // don't clear trash
   } else {
@@ -384,6 +390,14 @@ function mainClickHandler(event) {
       );
       user.createNewTask(indexOfProject, tasktext);
     }
+  }
+
+  if (theButton.classList.contains("task__delete-button")) {
+    const indexOfProject = parseInt(
+      event.target.closest(".section").dataset.index
+    );
+    const indexOfTask = parseInt(event.target.parentElement.dataset.index);
+    user.deleteTask(indexOfProject, indexOfTask);
   }
 }
 
