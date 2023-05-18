@@ -136,10 +136,11 @@ function renderSidebar() {
     totalTasksUnfinished += project.tasksUnfinished;
   }
   myProjects.innerHTML += `
-  <button class="button aside__item" id="new-project-btn">
-  <p>New project</p>
-  <div class="aside__indicator"></div>
-  </button>`;
+    <button class="button aside__item" id="new-project-btn">
+    <p>New project</p>
+    <div class="aside__indicator"></div>
+    </button>
+  `;
 
   aside.querySelector(".aside__indicator").textContent = totalTasksUnfinished;
 }
@@ -172,19 +173,25 @@ function renderMain(flag) {
           <p>Delete project</p>
           <div class="icon section__opt__icon"></div>
         </button>
-      </div>`;
+      </div>
+    `;
+
     for (let task of project.tasks) {
+      const i = project.tasks.indexOf(task);
+
       let selector = "task";
       if (task.isDone === true) {
         selector = "task task--checked";
       }
+
       section.innerHTML += `
-        <div class="${selector}">
+        <div class="${selector}" data-index="${i}">
           <div class="button task__tick"></div>
           <p class="button task__text">${task.text}</p>
         </div>
-        `;
+      `;
     }
+
     section.innerHTML += `
       <div class="section__subtext">
         <p class="section__subtext__completion">${
@@ -234,7 +241,8 @@ function renderNewProject() {
           <div class="section__opt__icon icon"></div>
         </button>
       </form>
-    </div>`;
+    </div>
+  `;
   mainContainer.appendChild(section);
 }
 
@@ -251,69 +259,75 @@ filesystem.projects[1].tasks[0].toggle();
 renderSidebar();
 renderMain("all");
 
+function asideClickHandler(event) {
+  const theButton = event.target.closest(".button");
+
+  if (theButton.dataset.index) {
+    const i = parseInt(theButton.dataset.index);
+    renderMain(i);
+  } else if (theButton.id === "all-tasks-btn") {
+    renderMain("all");
+  } else if (theButton.id === "logbook-btn") {
+    renderMain("log");
+  }
+
+  if (theButton.id === "theme-toggle") {
+    const text = theButton.querySelector("p").innerHTML;
+    if (text === "Switch to Dark theme") {
+      theButton.querySelector("p").innerHTML = "Switch to Light theme";
+    } else {
+      theButton.querySelector("p").innerHTML = "Switch to Dark theme";
+    }
+  }
+
+  if (theButton.id === "new-project-btn") {
+    renderNewProject();
+  }
+
+  toggleMenuOff();
+}
+
 document.querySelector(".aside").addEventListener("click", (event) => {
   if (
     event.target.classList.contains("button") ||
     event.target.parentElement.classList.contains("button")
   ) {
-    const theButton = event.target.closest(".button");
-    if (theButton.dataset.index) {
-      const i = parseInt(theButton.dataset.index);
-      renderMain(i);
-    } else if (theButton.id === "all-tasks-btn") {
-      renderMain("all");
-    } else if (theButton.id === "logbook-btn") {
-      renderMain("log");
-    }
-
-    if (theButton.id === "theme-toggle") {
-      const text = theButton.querySelector("p").innerHTML;
-      if (text === "Switch to Dark theme") {
-        theButton.querySelector("p").innerHTML = "Switch to Light theme";
-      } else {
-        theButton.querySelector("p").innerHTML = "Switch to Dark theme";
-      }
-    }
-
-    if (theButton.id === "new-project-btn") {
-      renderNewProject();
-    }
-
-    toggleMenuOff();
+    asideClickHandler(event);
   }
 });
 
-document.querySelector(".main").addEventListener("click", (event) => {
-  function clearTrash() {
+function clearTrash() {
+  document.querySelectorAll(".task__delete-button").forEach((btn) => {
+    btn.remove();
+  });
+}
+
+function mainClickHandler(event) {
+  const theButton = event.target.closest(".button");
+
+  if (theButton.classList.contains("task__text")) {
     document.querySelectorAll(".task__delete-button").forEach((btn) => {
       btn.remove();
     });
+    const trashIcon = document.createElement("div");
+    trashIcon.classList.add("task__delete-button", "button");
+    theButton.parentElement.appendChild(trashIcon);
+  } else {
+    clearTrash();
   }
 
+  if (theButton.id === "project-submit-btn") {
+    event.preventDefault();
+    console.log("HAHAHA");
+  }
+}
+
+document.querySelector(".main").addEventListener("click", (event) => {
   if (
     event.target.classList.contains("button") ||
     event.target.parentElement.classList.contains("button")
   ) {
-    const theButton = event.target.closest(".button");
-
-    if (theButton.classList.contains("task__text")) {
-      document.querySelectorAll(".task__delete-button").forEach((btn) => {
-        btn.remove();
-      });
-      const trashIcon = document.createElement("div");
-      trashIcon.classList.add("task__delete-button", "button");
-      theButton.parentElement.appendChild(trashIcon);
-    } else {
-      clearTrash();
-    }
-
-    if (theButton.classList.contains("section--add-task")) {
-    }
-
-    if (theButton.id === "project-submit-btn") {
-      event.preventDefault();
-      console.log("HAHAHA");
-    }
+    mainClickHandler(event);
   } else {
     clearTrash();
   }
