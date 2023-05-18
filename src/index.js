@@ -133,6 +133,11 @@ const user = {
     renderSidebar();
     rerenderProject(indexOfProject, renderProject(indexOfProject));
   },
+  toggleTask: function (indexOfProject, indexOfTask) {
+    filesystem.projects[indexOfProject].tasks[indexOfTask].toggle();
+    renderSidebar();
+    rerenderProject(indexOfProject, renderProject(indexOfProject));
+  },
 };
 
 function renderSidebar() {
@@ -410,6 +415,14 @@ function mainClickHandler(event) {
       theButton.closest(".section").dataset.index
     );
     user.deleteProject(indexOfProject);
+  }
+
+  if (theButton.classList.contains("task__tick")) {
+    const indexOfProject = parseInt(
+      event.target.closest(".section").dataset.index
+    );
+    const indexOfTask = parseInt(event.target.parentElement.dataset.index);
+    user.toggleTask(indexOfProject, indexOfTask);
   }
 }
 
