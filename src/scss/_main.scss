@@ -16,7 +16,7 @@ body.dark {
   min-height: 100dvh;
 
   &__title {
-    padding-top: 1rem;
+    padding-top: 3rem;
   }
 }
 
@@ -147,6 +147,14 @@ body.dark {
   .section {
     &__header {
       gap: 1rem;
+    }
+  }
+}
+
+@media (max-width: 599px) {
+  .main {
+    &__title {
+      padding-top: 1rem;
     }
   }
 }
