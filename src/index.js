@@ -6,6 +6,8 @@ const allImages = require.context(
 );
 const allFonts = require.context("./fonts/", true, /\.(woff2|ttf)$/);
 
+import { format } from "date-fns";
+
 function toggleMenuOn() {
   if (document.querySelector(".aside").dataset.shown === "false") {
     document.querySelector(".aside").setAttribute("data-shown", "true");
@@ -173,8 +175,12 @@ function renderMain(flag) {
     }
     section.innerHTML += `
       <div class="section__subtext">
-        <p class="section__subtext__completion">${project.percentComplete}% completed</p>
-        <p class="section__subtext__date">${project.datetime}</p>
+        <p class="section__subtext__completion">${
+          project.percentComplete
+        }% completed</p>
+        <p class="section__subtext__date">${
+          "Created on " + format(project.datetime, "EEE dd-MM-yyyy HH:mm")
+        }</p>
       </div>
     `;
 
