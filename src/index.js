@@ -117,12 +117,22 @@ function renderSidebar() {
   myProjects.innerHTML = "";
   myProjects.innerHTML += `<h6 class="my-projects-heading">My projects</h6>`;
   for (let project of filesystem.projects) {
-    myProjects.innerHTML += `
-      <button class="button aside__item">
-      <p>${project.name}</p>
-      <div class="aside__indicator">${project.tasksUnfinished}</div>
-      </button>
-    `;
+    if (project.tasksUnfinished > 0) {
+      myProjects.innerHTML += `
+        <button class="button aside__item" data-index="${filesystem.projects.indexOf(
+          project
+        )}">
+        <p>${project.name}</p>
+        <div class="aside__indicator">${project.tasksUnfinished}</div>
+        </button>
+      `;
+    } else {
+      myProjects.innerHTML += `
+        <button class="button aside__item">
+        <p>${project.name}</p>
+        </button>
+      `;
+    }
     totalTasksUnfinished += project.tasksUnfinished;
   }
   myProjects.innerHTML += `
@@ -138,6 +148,7 @@ function renderMain(flag) {
   const mainContainer = document
     .querySelector(".main")
     .querySelector(".container");
+  mainContainer.innerHTML = "";
 
   const renderProject = function (i) {
     let project;
@@ -149,6 +160,7 @@ function renderMain(flag) {
 
     const section = document.createElement("section");
     section.classList.add("section");
+    section.dataset.index = i;
     section.innerHTML += `
       <div class="section__header">
         <h3 class="section__title">${project.name}</h3>
@@ -217,3 +229,29 @@ filesystem.projects[1].tasks[0].toggle();
 
 renderSidebar();
 renderMain("all");
+
+document.querySelector(".aside").addEventListener("click", (event) => {
+  if (
+    event.target.classList.contains("button") ||
+    event.target.parentElement.classList.contains("button")
+  ) {
+    const theButton = event.target.closest(".button");
+    if (theButton.dataset.index) {
+      const i = parseInt(theButton.dataset.index);
+      renderMain(i);
+    } else if (theButton.id === "all-tasks-btn") {
+      renderMain("all");
+    } else if (theButton.id === "logbook-btn") {
+      renderMain("log");
+    }
+
+    if (theButton.id === "theme-toggle") {
+      const text = theButton.querySelector("p").innerHTML;
+      if (text === "Switch to Dark theme") {
+        theButton.querySelector("p").innerHTML = "Switch to Light theme";
+      } else {
+        theButton.querySelector("p").innerHTML = "Switch to Dark theme";
+      }
+    }
+  }
+});
