@@ -68,6 +68,10 @@ input[type="text"] {
   border: none;
   border-bottom: 1px solid var(--clr-button-borders);
   background: none;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 label {
