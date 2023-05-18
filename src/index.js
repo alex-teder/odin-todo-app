@@ -118,6 +118,11 @@ const user = {
     renderSidebar();
     renderMain(i);
   },
+  deleteProject: function (indexOfProject) {
+    filesystem.deleteProject(indexOfProject);
+    renderSidebar();
+    renderMain("all");
+  },
   createNewTask: function (indexOfProject, text) {
     filesystem.projects[indexOfProject].addTask(text);
     renderSidebar();
@@ -398,6 +403,13 @@ function mainClickHandler(event) {
     );
     const indexOfTask = parseInt(event.target.parentElement.dataset.index);
     user.deleteTask(indexOfProject, indexOfTask);
+  }
+
+  if (theButton.classList.contains("section--delete")) {
+    const indexOfProject = parseInt(
+      theButton.closest(".section").dataset.index
+    );
+    user.deleteProject(indexOfProject);
   }
 }
 
