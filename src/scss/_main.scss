@@ -140,6 +140,24 @@ body.dark {
   }
 }
 
+.new-task {
+  margin-bottom: 1rem;
+}
+
+.grey-text,
+.grey-text-smaller {
+  padding-block: 2rem;
+
+  &>p {
+    color: var(--clr-text-subtext);
+    margin-bottom: 1rem;
+  }
+}
+
+.grey-text-smaller {
+  padding-block: 0rem;
+}
+
 @media (min-width: 1200px) {
   .main {
     padding-inline: 5rem;

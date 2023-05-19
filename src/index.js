@@ -269,6 +269,14 @@ const display = {
     `;
     }
 
+    if (project.tasks.length === 0) {
+      section.innerHTML += `
+        <div class="grey-text-smaller">
+          <p>No tasks</p>
+        </div>
+      `;
+    }
+
     section.innerHTML += `
       <div class="section__subtext">
         <p class="section__subtext__completion">${
@@ -294,25 +302,34 @@ const display = {
     mainContainer.innerHTML = "";
 
     if (typeof flag === "number") {
-      document
-        .querySelector(".main")
-        .querySelector(".container")
-        .appendChild(display.renderProject(flag));
+      mainContainer.appendChild(display.renderProject(flag));
     } else if (flag === "all") {
       mainContainer.innerHTML += `<h2 class="main__title">My tasks</h2>`;
       for (let i = 0; i < filesystem.projects.length; i++) {
-        document
-          .querySelector(".main")
-          .querySelector(".container")
-          .appendChild(display.renderProject(i));
+        mainContainer.appendChild(display.renderProject(i));
+      }
+      if (filesystem.projects.length === 0) {
+        mainContainer.innerHTML += `
+          <div class="grey-text">
+            <p>No projects yet...</p>
+            <button id="go-to-new-project" class="button section__opt section--add-task">
+              <p>New project</p>
+              <div class="section__opt__icon icon"></div>
+            </button>
+          </div>
+        `;
       }
     } else if (flag === "log") {
       mainContainer.innerHTML += `<h2 class="main__title">Logbook</h2>`;
       for (let i = 0; i < filesystem.logbook.projects.length; i++) {
-        document
-          .querySelector(".main")
-          .querySelector(".container")
-          .appendChild(display.renderProject(i, "log"));
+        mainContainer.appendChild(display.renderProject(i, "log"));
+      }
+      if (filesystem.logbook.projects.length === 0) {
+        mainContainer.innerHTML += `
+          <div class="grey-text">
+            <p>No projects yet...</p>
+          </div>
+        `;
       }
     }
   },
@@ -424,7 +441,8 @@ const events = {
 
     if (
       theButton.classList.contains("section--add-task") &&
-      theButton.id !== "project-submit-btn"
+      theButton.id !== "project-submit-btn" &&
+      theButton.id !== "go-to-new-project"
     ) {
       const newTask = document.createElement("form");
       newTask.classList.add("task", "new-task", "button");
@@ -435,7 +453,14 @@ const events = {
         <button type="submit" class="button section__opt" id="task-submit-btn"></button>
       `;
       const theSection = theButton.closest("section");
-      theSection.insertBefore(newTask, theSection.querySelector(".task"));
+      if (theSection.querySelector(".task")) {
+        theSection.insertBefore(newTask, theSection.querySelector(".task"));
+      } else if (theSection.querySelector(".grey-text-smaller")) {
+        theSection.insertBefore(
+          newTask,
+          theSection.querySelector(".grey-text-smaller")
+        );
+      }
       theSection.querySelector("input").select();
     }
 
@@ -472,6 +497,10 @@ const events = {
       );
       const indexOfTask = parseInt(event.target.parentElement.dataset.index);
       user.toggleTask(indexOfProject, indexOfTask);
+    }
+
+    if (theButton.id === "go-to-new-project") {
+      display.renderNewProject();
     }
   },
 };
