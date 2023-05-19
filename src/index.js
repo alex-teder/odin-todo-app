@@ -8,28 +8,28 @@ const allFonts = require.context("./fonts/", true, /\.(woff2|ttf)$/);
 
 import { format } from "date-fns";
 
-function toggleMenuOn() {
-  if (document.querySelector(".aside").dataset.shown === "false") {
-    document.querySelector(".aside").setAttribute("data-shown", "true");
-    document.querySelector("#transparent-background").style.display = "block";
-  }
-}
-function toggleMenuOff() {
-  if (document.querySelector(".aside").dataset.shown === "true") {
-    document.querySelector(".aside").setAttribute("data-shown", "false");
-    document.querySelector("#transparent-background").style.display = "none";
-  }
-}
+const menu = {
+  toggleMenuOn() {
+    if (document.querySelector(".aside").dataset.shown === "false") {
+      document.querySelector(".aside").setAttribute("data-shown", "true");
+      document.querySelector("#transparent-background").style.display = "block";
+    }
+  },
 
-document.querySelector("#menu-btn").addEventListener("click", toggleMenuOn);
+  toggleMenuOff() {
+    if (document.querySelector(".aside").dataset.shown === "true") {
+      document.querySelector(".aside").setAttribute("data-shown", "false");
+      document.querySelector("#transparent-background").style.display = "none";
+    }
+  },
+};
+
+document
+  .querySelector("#menu-btn")
+  .addEventListener("click", menu.toggleMenuOn);
 document
   .querySelector("#transparent-background")
-  .addEventListener("click", toggleMenuOff);
-
-function toggleTheme() {
-  document.body.classList.toggle("light");
-  document.body.classList.toggle("dark");
-}
+  .addEventListener("click", menu.toggleMenuOff);
 
 class Task {
   constructor(text, isDone = false) {
@@ -153,167 +153,179 @@ const user = {
     const p = filesystem.createProject(name);
     const i = filesystem.projects.indexOf(p);
     storage.save();
-    renderSidebar();
-    renderMain(i);
+    display.renderSidebar();
+    display.renderMain(i);
   },
   deleteProject: function (indexOfProject) {
     filesystem.deleteProject(indexOfProject);
     storage.save();
-    renderSidebar();
-    renderMain("all");
+    display.renderSidebar();
+    display.renderMain("all");
   },
   createNewTask: function (indexOfProject, text) {
     filesystem.projects[indexOfProject].addTask(text);
     storage.save();
-    renderSidebar();
-    rerenderProject(indexOfProject, renderProject(indexOfProject));
+    display.renderSidebar();
+    display.rerenderProject(
+      indexOfProject,
+      display.renderProject(indexOfProject)
+    );
   },
   deleteTask: function (indexOfProject, indexOfTask) {
     filesystem.projects[indexOfProject].deleteTask(indexOfTask);
     storage.save();
-    renderSidebar();
-    rerenderProject(indexOfProject, renderProject(indexOfProject));
+    display.renderSidebar();
+    display.rerenderProject(
+      indexOfProject,
+      display.renderProject(indexOfProject)
+    );
   },
   toggleTask: function (indexOfProject, indexOfTask) {
     filesystem.projects[indexOfProject].tasks[indexOfTask].toggle();
     storage.save();
-    renderSidebar();
-    rerenderProject(indexOfProject, renderProject(indexOfProject));
+    display.renderSidebar();
+    display.rerenderProject(
+      indexOfProject,
+      display.renderProject(indexOfProject)
+    );
   },
 };
 
-function renderSidebar() {
-  const aside = document.querySelector(".aside");
-  const myProjects = aside.querySelector(".my-projects");
-  let totalTasksUnfinished = 0;
+const display = {
+  renderSidebar: function () {
+    const aside = document.querySelector(".aside");
+    const myProjects = aside.querySelector(".my-projects");
+    let totalTasksUnfinished = 0;
 
-  myProjects.innerHTML = "";
-  myProjects.innerHTML += `<h6 class="my-projects-heading">My projects</h6>`;
-  for (let project of filesystem.projects) {
-    if (project.tasksUnfinished > 0) {
-      myProjects.innerHTML += `
+    myProjects.innerHTML = "";
+    myProjects.innerHTML += `<h6 class="my-projects-heading">My projects</h6>`;
+    for (let project of filesystem.projects) {
+      if (project.tasksUnfinished > 0) {
+        myProjects.innerHTML += `
         <button class="button aside__item" data-index="${filesystem.projects.indexOf(
           project
         )}">
-        <p>${project.name}</p>
-        <div class="aside__indicator">${project.tasksUnfinished}</div>
+          <p>${project.name}</p>
+          <div class="aside__indicator">${project.tasksUnfinished}</div>
         </button>
       `;
-    } else {
-      myProjects.innerHTML += `
+      } else {
+        myProjects.innerHTML += `
         <button class="button aside__item" data-index="${filesystem.projects.indexOf(
           project
         )}">
-        <p>${project.name}</p>
+          <p>${project.name}</p>
         </button>
       `;
+      }
+      totalTasksUnfinished += project.tasksUnfinished;
     }
-    totalTasksUnfinished += project.tasksUnfinished;
-  }
-  myProjects.innerHTML += `
-    <button class="button aside__item" id="new-project-btn">
-    <p>New project</p>
-    <div class="aside__indicator"></div>
-    </button>
-  `;
-
-  aside.querySelector(".aside__indicator").textContent = totalTasksUnfinished;
-}
-
-function renderProject(i, flag) {
-  let project = filesystem.projects[i];
-  if (flag === "log") {
-    project = filesystem.logbook.projects[i];
-  }
-
-  const section = document.createElement("section");
-  section.classList.add("section");
-  section.dataset.index = i;
-  section.innerHTML += `
-    <div class="section__header">
-      <h3 class="section__title">${project.name}</h3>
-      <button class="button section__opt section--add-task">
-        <p>New task</p>
-        <div class="icon section__opt__icon"></div>
+    myProjects.innerHTML += `
+      <button class="button aside__item" id="new-project-btn">
+        <p>New project</p>
+        <div class="aside__indicator"></div>
       </button>
-      <button class="button section__opt section--delete">
-        <p>Delete project</p>
-        <div class="icon section__opt__icon"></div>
-      </button>
-    </div>
-  `;
+    `;
 
-  for (let task of project.tasks) {
-    const i = project.tasks.indexOf(task);
+    aside.querySelector(".aside__indicator").textContent = totalTasksUnfinished;
+  },
 
-    let selector = "task";
-    if (task.isDone === true) {
-      selector = "task task--checked";
+  renderProject: function (i, flag) {
+    let project = filesystem.projects[i];
+    if (flag === "log") {
+      project = filesystem.logbook.projects[i];
     }
 
+    const section = document.createElement("section");
+    section.classList.add("section");
+    section.dataset.index = i;
     section.innerHTML += `
+      <div class="section__header">
+        <h3 class="section__title">${project.name}</h3>
+        <button class="button section__opt section--add-task">
+          <p>New task</p>
+          <div class="icon section__opt__icon"></div>
+        </button>
+        <button class="button section__opt section--delete">
+          <p>Delete project</p>
+          <div class="icon section__opt__icon"></div>
+        </button>
+      </div>
+    `;
+
+    for (let task of project.tasks) {
+      const i = project.tasks.indexOf(task);
+
+      let selector = "task";
+      if (task.isDone === true) {
+        selector = "task task--checked";
+      }
+
+      section.innerHTML += `
       <div class="${selector}" data-index="${i}">
         <div class="button task__tick"></div>
         <p class="button task__text">${task.text}</p>
       </div>
     `;
-  }
+    }
 
-  section.innerHTML += `
-    <div class="section__subtext">
-      <p class="section__subtext__completion">${
-        project.percentComplete
-      }% completed</p>
-      <p class="section__subtext__date">${"Created on " + project.datetime}</p>
-    </div>
-  `;
-  return section;
-}
+    section.innerHTML += `
+      <div class="section__subtext">
+        <p class="section__subtext__completion">${
+          project.percentComplete
+        }% completed</p>
+        <p class="section__subtext__date">${
+          "Created on " + project.datetime
+        }</p>
+      </div>
+    `;
+    return section;
+  },
 
-function rerenderProject(i, newProject) {
-  const oldProject = document.querySelector(`.section[data-index="${i}"]`);
-  oldProject.replaceWith(newProject);
-}
+  rerenderProject(i, newProject) {
+    const oldProject = document.querySelector(`.section[data-index="${i}"]`);
+    oldProject.replaceWith(newProject);
+  },
 
-function renderMain(flag) {
-  const mainContainer = document
-    .querySelector(".main")
-    .querySelector(".container");
-  mainContainer.innerHTML = "";
-
-  if (typeof flag === "number") {
-    document
+  renderMain: function (flag) {
+    const mainContainer = document
       .querySelector(".main")
-      .querySelector(".container")
-      .appendChild(renderProject(flag));
-  } else if (flag === "all") {
-    mainContainer.innerHTML += `<h2 class="main__title">My tasks</h2>`;
-    for (let i = 0; i < filesystem.projects.length; i++) {
-      document
-        .querySelector(".main")
-        .querySelector(".container")
-        .appendChild(renderProject(i));
-    }
-  } else if (flag === "log") {
-    mainContainer.innerHTML += `<h2 class="main__title">Logbook</h2>`;
-    for (let i = 0; i < filesystem.logbook.projects.length; i++) {
-      document
-        .querySelector(".main")
-        .querySelector(".container")
-        .appendChild(renderProject(i, "log"));
-    }
-  }
-}
+      .querySelector(".container");
+    mainContainer.innerHTML = "";
 
-function renderNewProject() {
-  const mainContainer = document
-    .querySelector(".main")
-    .querySelector(".container");
-  mainContainer.innerHTML = "";
-  mainContainer.innerHTML += `<h2 class="main__title">New project</h2>`;
-  const section = document.createElement("section");
-  section.classList.add("section");
-  section.innerHTML += `
+    if (typeof flag === "number") {
+      document
+        .querySelector(".main")
+        .querySelector(".container")
+        .appendChild(display.renderProject(flag));
+    } else if (flag === "all") {
+      mainContainer.innerHTML += `<h2 class="main__title">My tasks</h2>`;
+      for (let i = 0; i < filesystem.projects.length; i++) {
+        document
+          .querySelector(".main")
+          .querySelector(".container")
+          .appendChild(display.renderProject(i));
+      }
+    } else if (flag === "log") {
+      mainContainer.innerHTML += `<h2 class="main__title">Logbook</h2>`;
+      for (let i = 0; i < filesystem.logbook.projects.length; i++) {
+        document
+          .querySelector(".main")
+          .querySelector(".container")
+          .appendChild(display.renderProject(i, "log"));
+      }
+    }
+  },
+
+  renderNewProject: function () {
+    const mainContainer = document
+      .querySelector(".main")
+      .querySelector(".container");
+    mainContainer.innerHTML = "";
+    mainContainer.innerHTML += `<h2 class="main__title">New project</h2>`;
+    const section = document.createElement("section");
+    section.classList.add("section");
+    section.innerHTML += `
     <div class="section__header">
       <form autocomplete="off">
         <input class="section__title" type="text" id="project-name-field" maxlength="30" placeholder="Enter name">
@@ -324,153 +336,162 @@ function renderNewProject() {
       </form>
     </div>
   `;
-  mainContainer.appendChild(section);
-}
+    mainContainer.appendChild(section);
+  },
+
+  toggleTheme() {
+    document.body.classList.toggle("light");
+    document.body.classList.toggle("dark");
+  },
+
+  clearTrash() {
+    document.querySelectorAll(".task__delete-button").forEach((btn) => {
+      btn.remove();
+    });
+    document.querySelectorAll("form.task").forEach((el) => {
+      el.remove();
+    });
+  },
+};
 
 if (localStorage.getItem("prefferedTheme") === "dark") {
-  toggleTheme();
+  display.toggleTheme();
   document.querySelector("#theme-toggle p").innerHTML = "Switch to Light theme";
 }
 storage.load();
-renderSidebar();
-renderMain("all");
+display.renderSidebar();
+display.renderMain("all");
 
-function asideClickHandler(event) {
-  const theButton = event.target.closest(".button");
+const events = {
+  asideClickHandler(event) {
+    const theButton = event.target.closest(".button");
 
-  if (theButton.dataset.index) {
-    const i = parseInt(theButton.dataset.index);
-    renderMain(i);
-  } else if (theButton.id === "all-tasks-btn") {
-    renderMain("all");
-  } else if (theButton.id === "logbook-btn") {
-    renderMain("log");
-  }
-
-  if (theButton.id === "theme-toggle") {
-    toggleTheme();
-    const text = theButton.querySelector("p").innerHTML;
-    if (text === "Switch to Dark theme") {
-      theButton.querySelector("p").innerHTML = "Switch to Light theme";
-      localStorage.setItem("prefferedTheme", "dark");
-    } else {
-      theButton.querySelector("p").innerHTML = "Switch to Dark theme";
-      localStorage.setItem("prefferedTheme", "light");
+    if (theButton.dataset.index) {
+      const i = parseInt(theButton.dataset.index);
+      display.renderMain(i);
+    } else if (theButton.id === "all-tasks-btn") {
+      display.renderMain("all");
+    } else if (theButton.id === "logbook-btn") {
+      display.renderMain("log");
     }
-  }
 
-  if (theButton.id === "new-project-btn") {
-    renderNewProject();
-  }
+    if (theButton.id === "theme-toggle") {
+      display.toggleTheme();
+      const text = theButton.querySelector("p").innerHTML;
+      if (text === "Switch to Dark theme") {
+        theButton.querySelector("p").innerHTML = "Switch to Light theme";
+        localStorage.setItem("prefferedTheme", "dark");
+      } else {
+        theButton.querySelector("p").innerHTML = "Switch to Dark theme";
+        localStorage.setItem("prefferedTheme", "light");
+      }
+    }
 
-  toggleMenuOff();
-}
+    if (theButton.id === "new-project-btn") {
+      display.renderNewProject();
+    }
+    if (theButton.id !== "theme-toggle") {
+      menu.toggleMenuOff();
+    }
+  },
+
+  mainClickHandler(event) {
+    const theButton = event.target.closest(".button");
+
+    if (theButton.classList.contains("task__text")) {
+      display.clearTrash();
+      const trashIcon = document.createElement("div");
+      trashIcon.classList.add("task__delete-button", "button");
+      theButton.parentElement.appendChild(trashIcon);
+    } else if (
+      theButton.getAttribute("type") === "submit" ||
+      theButton.classList.contains("new-task") ||
+      theButton.classList.contains("task__delete-button")
+    ) {
+      // don't clear trash
+    } else {
+      display.clearTrash();
+    }
+
+    if (theButton.id === "project-submit-btn") {
+      event.preventDefault();
+      const name = document.querySelector(".main").querySelector("input").value;
+      const regex = /^\s*\S.*$/; // not empty / not all whitespaces
+      if (regex.test(name)) {
+        user.createNewProject(name);
+      }
+    }
+
+    if (
+      theButton.classList.contains("section--add-task") &&
+      theButton.id !== "project-submit-btn"
+    ) {
+      const newTask = document.createElement("form");
+      newTask.classList.add("task", "new-task", "button");
+      newTask.setAttribute("autocomplete", "off");
+      newTask.innerHTML = `
+        <div class="button task__tick"></div>
+        <input type="text" maxlength="99" id="new-task-text" placeholder="Enter task">
+        <button type="submit" class="button section__opt" id="task-submit-btn"></button>
+      `;
+      const theSection = theButton.closest("section");
+      theSection.insertBefore(newTask, theSection.querySelector(".task"));
+      theSection.querySelector("input").select();
+    }
+
+    if (theButton.id === "task-submit-btn") {
+      event.preventDefault();
+      const tasktext = document.querySelector("#new-task-text").value;
+      const regex = /^\s*\S.*$/; // not empty / not all whitespaces
+      if (regex.test(tasktext)) {
+        const indexOfProject = parseInt(
+          theButton.closest(".section").dataset.index
+        );
+        user.createNewTask(indexOfProject, tasktext);
+      }
+    }
+
+    if (theButton.classList.contains("task__delete-button")) {
+      const indexOfProject = parseInt(
+        event.target.closest(".section").dataset.index
+      );
+      const indexOfTask = parseInt(event.target.parentElement.dataset.index);
+      user.deleteTask(indexOfProject, indexOfTask);
+    }
+
+    if (theButton.classList.contains("section--delete")) {
+      const indexOfProject = parseInt(
+        theButton.closest(".section").dataset.index
+      );
+      user.deleteProject(indexOfProject);
+    }
+
+    if (theButton.classList.contains("task__tick")) {
+      const indexOfProject = parseInt(
+        event.target.closest(".section").dataset.index
+      );
+      const indexOfTask = parseInt(event.target.parentElement.dataset.index);
+      user.toggleTask(indexOfProject, indexOfTask);
+    }
+  },
+};
 
 document.querySelector(".aside").addEventListener("click", (event) => {
   if (
     event.target.classList.contains("button") ||
     event.target.parentElement.classList.contains("button")
   ) {
-    asideClickHandler(event);
+    events.asideClickHandler(event);
   }
 });
-
-function clearTrash() {
-  document.querySelectorAll(".task__delete-button").forEach((btn) => {
-    btn.remove();
-  });
-  document.querySelectorAll("form.task").forEach((el) => {
-    el.remove();
-  });
-}
-
-function mainClickHandler(event) {
-  const theButton = event.target.closest(".button");
-
-  if (theButton.classList.contains("task__text")) {
-    clearTrash();
-    const trashIcon = document.createElement("div");
-    trashIcon.classList.add("task__delete-button", "button");
-    theButton.parentElement.appendChild(trashIcon);
-  } else if (
-    theButton.getAttribute("type") === "submit" ||
-    theButton.classList.contains("new-task") ||
-    theButton.classList.contains("task__delete-button")
-  ) {
-    // don't clear trash
-  } else {
-    clearTrash();
-  }
-
-  if (theButton.id === "project-submit-btn") {
-    event.preventDefault();
-    const name = document.querySelector(".main").querySelector("input").value;
-    const regex = /^\S.*\S$/;
-    if (regex.test(name)) {
-      user.createNewProject(name);
-    }
-  }
-
-  if (
-    theButton.classList.contains("section--add-task") &&
-    theButton.id !== "project-submit-btn"
-  ) {
-    const newTask = document.createElement("form");
-    newTask.classList.add("task", "new-task", "button");
-    newTask.setAttribute("autocomplete", "off");
-    newTask.innerHTML = `
-      <div class="button task__tick"></div>
-      <input type="text" maxlength="99" id="new-task-text" placeholder="Enter task">
-      <button type="submit" class="button section__opt" id="task-submit-btn"></button>
-    `;
-    const theSection = theButton.closest("section");
-    theSection.insertBefore(newTask, theSection.querySelector(".task"));
-    theSection.querySelector("input").select();
-  }
-
-  if (theButton.id === "task-submit-btn") {
-    event.preventDefault();
-    const tasktext = document.querySelector("#new-task-text").value;
-    const regex = /^\S.*\S$/;
-    if (regex.test(tasktext)) {
-      const indexOfProject = parseInt(
-        theButton.closest(".section").dataset.index
-      );
-      user.createNewTask(indexOfProject, tasktext);
-    }
-  }
-
-  if (theButton.classList.contains("task__delete-button")) {
-    const indexOfProject = parseInt(
-      event.target.closest(".section").dataset.index
-    );
-    const indexOfTask = parseInt(event.target.parentElement.dataset.index);
-    user.deleteTask(indexOfProject, indexOfTask);
-  }
-
-  if (theButton.classList.contains("section--delete")) {
-    const indexOfProject = parseInt(
-      theButton.closest(".section").dataset.index
-    );
-    user.deleteProject(indexOfProject);
-  }
-
-  if (theButton.classList.contains("task__tick")) {
-    const indexOfProject = parseInt(
-      event.target.closest(".section").dataset.index
-    );
-    const indexOfTask = parseInt(event.target.parentElement.dataset.index);
-    user.toggleTask(indexOfProject, indexOfTask);
-  }
-}
 
 document.querySelector(".main").addEventListener("click", (event) => {
   if (
     event.target.classList.contains("button") ||
     event.target.parentElement.classList.contains("button")
   ) {
-    mainClickHandler(event);
+    events.mainClickHandler(event);
   } else {
-    clearTrash();
+    display.clearTrash();
   }
 });
