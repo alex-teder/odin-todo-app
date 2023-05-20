@@ -5,7 +5,6 @@ const allImages = require.context(
   /\.(png|jpe?g|gif|svg|webp)$/
 );
 const allFonts = require.context("./fonts/", true, /\.(woff2|ttf)$/);
-
 import { format } from "date-fns";
 
 const menu = {
@@ -194,6 +193,22 @@ const user = {
 const display = {
   renderSidebar: function () {
     const aside = document.querySelector(".aside");
+    const namechanger = document.querySelector(".aside__namechanger");
+    if (localStorage.getItem("username")) {
+      namechanger.innerHTML = `
+        <p class="button" id="username"><b>Hello, ${localStorage.getItem(
+          "username"
+        )}!</b></p>
+      `;
+    } else {
+      namechanger.innerHTML = `
+        <form autocomplete="off">
+          <input type="text" id="username-field" placeholder="Enter your name..." style="display: inline">
+          <button type="submit" class="button" id="username-submit-btn">Save</button>
+        </form>
+      `;
+    }
+
     const myProjects = aside.querySelector(".my-projects");
     let totalTasksUnfinished = 0;
 
@@ -407,7 +422,25 @@ const events = {
     if (theButton.id === "new-project-btn") {
       display.renderNewProject();
     }
-    if (theButton.id !== "theme-toggle") {
+
+    if (theButton.id === "username-submit-btn") {
+      event.preventDefault();
+      const input = document.querySelector("#username-field").value;
+      localStorage.setItem("username", input);
+      display.renderSidebar();
+    }
+
+    if (theButton.id === "username") {
+      localStorage.removeItem("username");
+      display.renderSidebar();
+      document.querySelector("#username-field").select();
+    }
+
+    if (
+      theButton.id !== "theme-toggle" &&
+      theButton.id !== "username-submit-btn" &&
+      theButton.id !== "username"
+    ) {
       menu.toggleMenuOff();
     }
   },

@@ -75,3 +75,22 @@
   background-position: center;
   background-color: var(--clr-green);
 }
+
+#username:hover {
+  text-decoration: underline;
+}
+
+.aside__namechanger form {
+  position: relative;
+}
+
+#username-submit-btn {
+  font-size: 0;
+  height: 1px;
+  width: 1px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  position: absolute;
+}
