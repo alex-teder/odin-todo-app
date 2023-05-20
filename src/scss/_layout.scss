@@ -5,8 +5,6 @@
   position: fixed;
   top: 0;
   left: 0;
-
-  transition: transform 0.2s ease-out;
 }
 
 .main {
@@ -42,7 +40,8 @@ body.dark {
 }
 
 @media (max-width: 599px) {
-  .aside[data-shown="false"] {
+  .aside {
+    transition: transform 0.2s ease-out;
     transform: translateX(-100%);
   }
 
