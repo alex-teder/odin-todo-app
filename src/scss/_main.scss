@@ -158,6 +158,21 @@ body.dark {
   padding-block: 0rem;
 }
 
+.help-section {
+  p {
+    font-size: 0.8rem;
+    padding-bottom: 1rem;
+  }
+}
+
+#reset-btn {
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 @media (min-width: 1200px) {
   .main {
     padding-inline: 5rem;

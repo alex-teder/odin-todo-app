@@ -110,7 +110,7 @@ const filesystem = {
 
 const storage = {
   clear: function () {
-    localStorage.removeItem("data");
+    localStorage.clear();
   },
   save: function () {
     let acc = [];
@@ -447,6 +447,21 @@ const display = {
     mainContainer.appendChild(section);
   },
 
+  renderHelp() {
+    const mainContainer = document
+      .querySelector(".main")
+      .querySelector(".container");
+    mainContainer.innerHTML = "";
+    mainContainer.innerHTML += `<h2 class="main__title">Help</h2>`;
+    const section = document.createElement("section");
+    section.classList.add("section", "help-section");
+    section.innerHTML = `
+      <p>All projects and tasks are saved to your browser's local storage.</p>
+      <p><span class="button" id="reset-btn">Click here</span> to reset the local storage.<br>(Deletes everything!)</p>
+    `;
+    mainContainer.appendChild(section);
+  },
+
   toggleTheme() {
     document.body.classList.toggle("light");
     document.body.classList.toggle("dark");
@@ -510,6 +525,10 @@ const events = {
       localStorage.removeItem("username");
       display.renderSidebar();
       document.querySelector("#username-field").select();
+    }
+
+    if (theButton.id === "help-btn") {
+      display.renderHelp();
     }
 
     if (
@@ -621,6 +640,11 @@ const events = {
         theButton.closest(".section").dataset.index
       );
       user.pushToLogbook(indexOfProject);
+    }
+
+    if (theButton.id === "reset-btn") {
+      storage.clear();
+      location.reload();
     }
   },
 };

@@ -96,3 +96,9 @@ body.dark {
     filter: invert(0.9);
   }
 }
+
+a,
+a:visited,
+a:active {
+  color: inherit;
+}
