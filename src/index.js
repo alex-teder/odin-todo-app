@@ -130,6 +130,22 @@ const storage = {
       acc.push(p);
     }
     localStorage.setItem("data", JSON.stringify(acc));
+    acc = [];
+    for (const project of filesystem.logbook.projects) {
+      const p = {
+        name: project.name,
+        datetime: project.datetime,
+        tasks: [],
+      };
+      for (const task of project.tasks) {
+        const t = {
+          text: task.text,
+        };
+        p.tasks.push(t);
+      }
+      acc.push(p);
+    }
+    localStorage.setItem("logbook", JSON.stringify(acc));
   },
   load: function () {
     const arr =
@@ -143,6 +159,14 @@ const storage = {
         tasks.push(new Task(task.text, task.isDone));
       }
       filesystem.createProject(p.name, tasks, p.datetime);
+    }
+    const logArr = JSON.parse(localStorage.getItem("logbook")) || [];
+    for (const p of logArr) {
+      const tasks = [];
+      for (const task of p.tasks) {
+        tasks.push(new Task(task.text, true));
+      }
+      filesystem.logbook.projects.push(new Project(p.name, tasks, p.datetime));
     }
   },
 };
@@ -187,6 +211,18 @@ const user = {
       indexOfProject,
       display.renderProject(indexOfProject)
     );
+  },
+  pushToLogbook: function (indexOfProject) {
+    filesystem.moveToLogbook(indexOfProject);
+    storage.save();
+    display.renderSidebar();
+    display.renderMain("all");
+  },
+  deleteFromLogbook: function (indexOfProject) {
+    filesystem.logbook.deleteProject(indexOfProject);
+    storage.save();
+    display.renderSidebar();
+    display.renderMain("log");
   },
 };
 
@@ -254,19 +290,50 @@ const display = {
     const section = document.createElement("section");
     section.classList.add("section");
     section.dataset.index = i;
-    section.innerHTML += `
-      <div class="section__header">
-        <h3 class="section__title">${project.name}</h3>
-        <button class="button section__opt section--add-task">
-          <p>New task</p>
-          <div class="icon section__opt__icon"></div>
-        </button>
-        <button class="button section__opt section--delete">
-          <p>Delete project</p>
-          <div class="icon section__opt__icon"></div>
-        </button>
-      </div>
-    `;
+    if (flag === "log") {
+      section.dataset.islogged = "true";
+      section.innerHTML += `
+        <div class="section__header">
+          <h3 class="section__title">${project.name}</h3>
+          <button class="button section__opt section--delete">
+            <p>Delete project</p>
+            <div class="icon section__opt__icon"></div>
+          </button>
+        </div>
+      `;
+    } else if (project.percentComplete !== 100) {
+      section.innerHTML += `
+        <div class="section__header">
+          <h3 class="section__title">${project.name}</h3>
+          <button class="button section__opt section--add-task">
+            <p>New task</p>
+            <div class="icon section__opt__icon"></div>
+          </button>
+          <button class="button section__opt section--delete">
+            <p>Delete project</p>
+            <div class="icon section__opt__icon"></div>
+          </button>
+        </div>
+      `;
+    } else {
+      section.innerHTML += `
+        <div class="section__header">
+          <h3 class="section__title">${project.name}</h3>
+          <button class="button section__opt section--add-task">
+            <p>New task</p>
+            <div class="icon section__opt__icon"></div>
+          </button>
+          <button class="button section__opt section--delete">
+            <p>Delete project</p>
+            <div class="icon section__opt__icon"></div>
+          </button>
+          <button class="button section__opt section--log">
+            <p>Add to Logbook</p>
+            <div class="section__opt__icon icon"></div>
+          </button>
+        </div>
+      `;
+    }
 
     for (let task of project.tasks) {
       const i = project.tasks.indexOf(task);
@@ -276,12 +343,21 @@ const display = {
         selector = "task task--checked";
       }
 
-      section.innerHTML += `
-      <div class="${selector}" data-index="${i}">
-        <div class="button task__tick"></div>
-        <p class="button task__text">${task.text}</p>
-      </div>
-    `;
+      if (flag === "log") {
+        section.innerHTML += `
+          <div class="task task--checked" data-index="${i}">
+            <div class="task__tick"></div>
+            <p class="task__text">${task.text}</p>
+          </div>
+        `;
+      } else {
+        section.innerHTML += `
+          <div class="${selector}" data-index="${i}">
+            <div class="button task__tick"></div>
+            <p class="button task__text">${task.text}</p>
+          </div>
+        `;
+      }
     }
 
     if (project.tasks.length === 0) {
@@ -521,7 +597,11 @@ const events = {
       const indexOfProject = parseInt(
         theButton.closest(".section").dataset.index
       );
-      user.deleteProject(indexOfProject);
+      if (theButton.closest(".section").dataset.islogged === "true") {
+        user.deleteFromLogbook(indexOfProject);
+      } else {
+        user.deleteProject(indexOfProject);
+      }
     }
 
     if (theButton.classList.contains("task__tick")) {
@@ -534,6 +614,13 @@ const events = {
 
     if (theButton.id === "go-to-new-project") {
       display.renderNewProject();
+    }
+
+    if (theButton.classList.contains("section--log")) {
+      const indexOfProject = parseInt(
+        theButton.closest(".section").dataset.index
+      );
+      user.pushToLogbook(indexOfProject);
     }
   },
 };
