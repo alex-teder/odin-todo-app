@@ -436,7 +436,7 @@ const display = {
     section.innerHTML += `
     <div class="section__header">
       <form autocomplete="off">
-        <input class="section__title" type="text" id="project-name-field" maxlength="30" placeholder="Enter project name">
+        <input class="section__title" type="text" id="project-name-field" maxlength="30" placeholder="Enter project name...">
         <button type="submit" id="project-submit-btn" class="button section__opt section--add-task">
           <p>Create new project</p>
           <div class="section__opt__icon icon"></div>
