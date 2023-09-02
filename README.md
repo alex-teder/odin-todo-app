@@ -13,6 +13,7 @@ The To-Do App is a straightforward and efficient task management tool designed t
 - __Track Progress:__ Mark tasks as completed to track your progress.
 - __Logbook:__ Review your completed projects in the Logbook to reflect on your accomplishments.
 - __Responsive Interface:__ Intuitive and easy-to-use design for a seamless experience on mobile and desktop.
+- __Light and Dark Theme:__ Switch between light and dark themes for a comfortable and visually pleasing experience, day or night.
 
 ## Stack
 - Vanilla JavaScript
