@@ -1,7 +1,7 @@
 # To-do app
 
 ## Live link:
-https://teder-kedr.github.io/odin-todo-app/
+https://alex-teder.github.io/odin-todo-app/
 
 ## Overview
 The To-Do App is a straightforward and efficient task management tool designed to help you stay organized and boost your productivity. Whether you're tackling daily chores or managing complex projects, this app has got you covered.
